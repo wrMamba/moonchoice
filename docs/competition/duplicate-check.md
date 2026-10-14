@@ -30,6 +30,7 @@ GitHub检索MoonBit+TOPSIS/multicriteria/PROMETHEE仓库，以及TOPSIS/VIKOR/PR
 | [hutingyu-nuist/moonballot](https://github.com/hutingyu-nuist/moonballot) 已阅0.1.0、公开较新0.1.3，pairwise源码/测试 | 序数选票→两两计票/IRV | 非原单位差异的PROMETHEE，本项目不做选举 |
 | [chenzexin02-hash/moonbit-decision-tree](https://github.com/chenzexin02-hash/moonbit-decision-tree) 0.2.0，接口/README | 标记数据→树训练→预测 | 名称相邻但核心不重合，本项目不做训练 |
 | [shencangsheng513/moonmatch](https://github.com/shencangsheng513/moonmatch) 0.1.0，mbti及hospital-resident测试 | 双边偏好/容量→稳定配对 | 与第二候选直接重合，淘汰；本项目无分配算法 |
+| [walkzzz/owl_mbt](https://github.com/toadium/owl-mbt) 0.1.1，完整tree、README、src/stats/order.mbt、src/optimise/core.mbt及optimise_test.mbt | 科学数组/标量秩与连续梯度下降→统计量/最小值 | 共享排序/秩等数学原语，不是有限备选MCDA；已阅优化测试为连续函数极小值，不复用其移植源码 |
 | 永久登记MoonPetri及petri/pnml关联包 | 标识/迁移→网分析 | 第三候选直接重合，淘汰；本项目无迁移状态 |
 
 维护判断基于公开版本、可访问源码和测试，不以下载量/排序替代。私有、未索引和后续新发布项目不在结论内。独立建设必要性是稳定的有限MCDA数据模型与解释流程，不是加权和/矩阵本身。
@@ -38,4 +39,4 @@ GitHub检索MoonBit+TOPSIS/multicriteria/PROMETHEE仓库，以及TOPSIS/VIKOR/PR
 
 输入：有限Double矩阵、benefit/cost、权重、原单位阈值、显式情景。核心：minmax/vector→SAW/TOPSIS/WPM/VIKOR、六偏好PROMETHEE、Pareto层、AHP/客观赋权、秩一致性、解析交点和删除重算。输出：秩、贡献/距离/流量、妥协集、频数及JSON/CSV。
 
-反向关键词包括promethee_ii、topsis_score、criteria weights、compromise ranking、决策矩阵，且检查weighted sum邻项源码。交付前再次检索并重读共享注册表新增相关条目；若发现成熟直接替代则停止发布，不用功能堆叠掩盖重复。当前记录范围内未发现成熟的直接替代；数学方法均非原创。
+反向关键词包括promethee_ii、topsis_score、criteria weights、compromise ranking、决策矩阵，且检查weighted sum邻项源码。2026-10-14发布前已再次检索topsis、vikor、promethee_ii、compromise ranking、criteria weights、决策矩阵：前四项零结果，后两项复核既有邻项及新增Owl科学库，未发现同核心替代；并重读共享注册表MoonChoice及MoonPetri相关完整指纹。检索限制仍适用，零结果不单独构成通过依据。当前记录范围内未发现成熟的直接替代；数学方法均非原创。
