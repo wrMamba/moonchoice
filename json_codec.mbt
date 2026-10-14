@@ -2,7 +2,23 @@
 /// Bounded parse: at most 1 Mi code units, with at most eight nested containers.
 pub fn parse_document(text : String) -> Json raise ChoiceError {
   if text.length() > 1048576 { raise Budget("JSON document exceeds 1 Mi code units") }
-  try @json.parse(text[:], max_nesting_depth=8) catch {
+  let mut depth = 0
+  let mut in_string = false
+  let mut escaped = false
+  for c in text.iter() {
+    if in_string {
+      if escaped { escaped = false }
+      else if c == '\\' { escaped = true }
+      else if c == '"' { in_string = false }
+    } else {
+      if c == '"' { in_string = true }
+      else if c == '[' || c == '{' {
+        depth += 1
+        if depth > 8 { raise Budget("JSON nesting exceeds eight containers") }
+      } else if c == ']' || c == '}' { depth -= 1 }
+    }
+  }
+  try @json.parse(text[:]) catch {
     _ => raise Invalid("invalid JSON or excessive nesting")
   }
 }
@@ -75,8 +91,8 @@ pub fn decode_matrix(text : String) -> DecisionMatrix raise ChoiceError {
 
 ///|
 pub fn DecisionMatrix::to_json(self : DecisionMatrix) -> Json {
-  Json::Object({
-    "schema": Json::String("moonchoice.matrix/1"),
+  Json::object({
+    "schema": Json::string("moonchoice.matrix/1"),
     "alternatives": self.names.to_json(),
     "criteria": self.criteria.to_json(),
     "directions": self.directions.map(d => if d == Benefit { "benefit" } else { "cost" }).to_json(),
@@ -93,8 +109,8 @@ pub fn encode_matrix(m : DecisionMatrix) -> String {
 /// Validates externally mutable Ranking arrays before serializing them.
 pub fn ranking_json(ranking : Ranking) -> Json raise ChoiceError {
   let r = validated_ranking(ranking)
-  Json::Object({
-    "schema": Json::String("moonchoice.ranking/1"),
+  Json::object({
+    "schema": Json::string("moonchoice.ranking/1"),
     "labels": r.labels.to_json(),
     "scores": r.scores.to_json(),
     "order": r.order.to_json(),
