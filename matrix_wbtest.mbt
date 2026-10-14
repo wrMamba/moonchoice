@@ -11,6 +11,6 @@ test "matrix copies input and output without aliasing" {
   let output = m.values()
   output[0][0] = 8.0
   assert_eq(m.cell(0, 0), 1.0)
-  assert_true((try? m.cell(-1, 0)) is Err(_))
-  assert_true((try? decision_matrix(["A", "A"], ["x"], [Benefit], [[1.0], [2.0]])) is Err(_))
+  try m.cell(-1, 0) catch { _ => () } noraise { _ => fail("expected rejection") }
+  try decision_matrix(["A", "A"], ["x"], [Benefit], [[1.0], [2.0]]) catch { _ => () } noraise { _ => fail("expected rejection") }
 }

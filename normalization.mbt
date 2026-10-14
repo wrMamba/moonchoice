@@ -58,7 +58,7 @@ pub fn DecisionMatrix::normalize(self : DecisionMatrix, mode : Normalization) ->
         let scale = maximum(col.map(x => x.abs()))
         if scale > 0.0 {
           let square_sum = sum(col.map(x => { let y = x / scale; y * y }))
-          let norm = @math.sqrt(square_sum)
+          let norm = square_sum.sqrt()
           let sign = if self.directions[j] == Benefit { 1.0 } else { -1.0 }
           for i in 0..<n {
             out[i][j] = sign * (col[i] / scale) / norm
