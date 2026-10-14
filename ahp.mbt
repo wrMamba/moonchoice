@@ -5,8 +5,8 @@ pub(all) struct AhpResult {
   consistency_index : Double
   consistency_ratio : Double
   residual : Double
-  iterations : Int
-  worst_triad : Array[Int]
+  iterations : Int32
+  worst_triad : Array[Int32]
   worst_log_inconsistency : Double
 } derive(@debug.Debug)
 
@@ -14,8 +14,8 @@ pub(all) struct AhpResult {
 /// Reciprocal positive matrices of size 1..15; bounded power iteration.
 pub fn ahp(
   comparisons : Array[Array[Double]],
-  tolerance? : Double = 1.0e-10,
-  max_iterations? : Int = 2048,
+  tolerance~ : Double = 1.0e-10,
+  max_iterations~ : Int32 = 2048,
 ) -> AhpResult raise ChoiceError {
   let n = comparisons.length()
   if n == 0 || n > 15 {
@@ -96,7 +96,7 @@ pub fn ahp(
   } else {
     consistency_index / ri[n - 1]
   }
-  let mut worst_triad : Array[Int] = []
+  let mut worst_triad : Array[Int32] = []
   let mut worst_log_inconsistency = 0.0
   for i in 0..<n {
     for j in (i + 1)..<n {

@@ -12,7 +12,7 @@ pub fn evaluate(
   m : DecisionMatrix,
   weights : Array[Double],
   algorithm : Method,
-  tolerance? : Double = 1.0e-10,
+  tolerance~ : Double = 1.0e-10,
 ) -> Ranking raise ChoiceError {
   match algorithm {
     Additive(normalization) =>
@@ -37,7 +37,7 @@ pub fn compare_methods(
   m : DecisionMatrix,
   weights : Array[Double],
   methods : Array[Method],
-  tolerance? : Double = 1.0e-10,
+  tolerance~ : Double = 1.0e-10,
 ) -> MethodComparison raise ChoiceError {
   if methods.length() == 0 || methods.length() > 16 {
     raise Budget("algorithm count must be 1..16")

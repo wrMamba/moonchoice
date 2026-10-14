@@ -13,8 +13,8 @@ pub(all) struct VikorResult {
 pub fn vikor(
   m : DecisionMatrix,
   weights : Array[Double],
-  v? : Double = 0.5,
-  tolerance? : Double = 1.0e-10,
+  v~ : Double = 0.5,
+  tolerance~ : Double = 1.0e-10,
 ) -> VikorResult raise ChoiceError {
   probability(v)
   let w = matrix_weights(m, weights)

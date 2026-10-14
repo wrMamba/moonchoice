@@ -1,14 +1,14 @@
 ///|
 pub(all) struct ScenarioReport {
   rankings : Array[Ranking]
-  rank_counts : Array[Array[Int]]
-  winner_counts : Array[Int]
+  rank_counts : Array[Array[Int32]]
+  winner_counts : Array[Int32]
   mean_ranks : Array[Double]
-  best_ranks : Array[Int]
-  worst_ranks : Array[Int]
+  best_ranks : Array[Int32]
+  worst_ranks : Array[Int32]
   universally_best : Array[String]
-  pairwise_wins : Array[Array[Int]]
-  pairwise_ties : Array[Array[Int]]
+  pairwise_wins : Array[Array[Int32]]
+  pairwise_ties : Array[Array[Int32]]
 } derive(@debug.Debug)
 
 ///|
@@ -17,7 +17,7 @@ pub fn weight_scenarios(
   m : DecisionMatrix,
   scenarios : Array[Array[Double]],
   algorithm : Method,
-  tolerance? : Double = 1.0e-10,
+  tolerance~ : Double = 1.0e-10,
 ) -> ScenarioReport raise ChoiceError {
   let (n, p) = m.shape()
   let count = scenarios.length()
@@ -28,15 +28,17 @@ pub fn weight_scenarios(
     raise Budget("scenario work exceeds 16777216 cell comparisons")
   }
   let rankings = scenarios.map(w => evaluate(m, w, algorithm, tolerance~))
-  let rank_counts : Array[Array[Int]] = [ for _ in 0..<n => Array::make(n, 0) ]
+  let rank_counts : Array[Array[Int32]] = [
+    for _ in 0..<n => Array::make(n, 0)
+  ]
   let winner_counts = Array::make(n, 0)
   let mean_ranks = Array::make(n, 0.0)
   let best_ranks = Array::make(n, n)
   let worst_ranks = Array::make(n, 1)
-  let pairwise_wins : Array[Array[Int]] = [
+  let pairwise_wins : Array[Array[Int32]] = [
     for _ in 0..<n => Array::make(n, 0)
   ]
-  let pairwise_ties : Array[Array[Int]] = [
+  let pairwise_ties : Array[Array[Int32]] = [
     for _ in 0..<n => Array::make(n, 0)
   ]
   for ranking in rankings {
@@ -85,7 +87,7 @@ pub fn weight_scenarios(
 /// Vary one weight, redistributing the rest proportionally to baseline weights.
 pub fn weight_grid(
   weights : Array[Double],
-  criterion : Int,
+  criterion : Int32,
   values : Array[Double],
 ) -> Array[Array[Double]] raise ChoiceError {
   let base = normalize_weights(weights)

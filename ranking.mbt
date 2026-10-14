@@ -2,8 +2,8 @@
 pub(all) struct Ranking {
   labels : Array[String]
   scores : Array[Double]
-  order : Array[Int]
-  ranks : Array[Int]
+  order : Array[Int32]
+  ranks : Array[Int32]
   higher_is_better : Bool
   tie_tolerance : Double
 } derive(@debug.Debug)
@@ -13,8 +13,8 @@ pub(all) struct Ranking {
 pub fn rank_scores(
   labels : Array[String],
   scores : Array[Double],
-  higher_is_better? : Bool = true,
-  tolerance? : Double = 1.0e-10,
+  higher_is_better~ : Bool = true,
+  tolerance~ : Double = 1.0e-10,
 ) -> Ranking raise ChoiceError {
   valid_labels(labels, 256)
   valid_tolerance(tolerance)
@@ -86,7 +86,7 @@ pub fn Ranking::winners(self : Ranking) -> Array[String] raise ChoiceError {
 ///|
 pub fn Ranking::top(
   self : Ranking,
-  count : Int,
+  count : Int32,
 ) -> Array[String] raise ChoiceError {
   let r = validated_ranking(self)
   if count < 0 || count > r.order.length() {

@@ -2,7 +2,7 @@
 fn close_arrays(
   a : Array[Double],
   b : Array[Double],
-  eps? : Double = 1.0e-10,
+  eps~ : Double = 1.0e-10,
 ) -> Unit raise {
   assert_eq(a.length(), b.length())
   for i in 0..<a.length() {

@@ -1,5 +1,5 @@
 ///|
-fn selection(indices : Array[Int], count : Int) -> Unit raise ChoiceError {
+fn selection(indices : Array[Int32], count : Int32) -> Unit raise ChoiceError {
   if indices.length() == 0 {
     raise Invalid("selection must not be empty")
   }
@@ -18,7 +18,7 @@ fn selection(indices : Array[Int], count : Int) -> Unit raise ChoiceError {
 ///|
 pub fn DecisionMatrix::select_alternatives(
   self : DecisionMatrix,
-  indices : Array[Int],
+  indices : Array[Int32],
 ) -> DecisionMatrix raise ChoiceError {
   selection(indices, self.names.length())
   decision_matrix(
@@ -32,7 +32,7 @@ pub fn DecisionMatrix::select_alternatives(
 ///|
 pub fn DecisionMatrix::select_criteria(
   self : DecisionMatrix,
-  indices : Array[Int],
+  indices : Array[Int32],
 ) -> DecisionMatrix raise ChoiceError {
   selection(indices, self.criteria.length())
   decision_matrix(
@@ -85,7 +85,7 @@ pub fn removal_analysis(
   m : DecisionMatrix,
   weights : Array[Double],
   algorithm : Method,
-  removed : Int,
+  removed : Int32,
 ) -> RemovalAnalysis raise ChoiceError {
   let n = m.names.length()
   if n < 2 || removed < 0 || removed >= n {

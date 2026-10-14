@@ -68,7 +68,7 @@ fn json_number(value : Json) -> Double raise ChoiceError {
 }
 
 ///|
-fn json_array(value : Json, limit : Int) -> Array[Json] raise ChoiceError {
+fn json_array(value : Json, limit : Int32) -> Array[Json] raise ChoiceError {
   guard value is Array(items) else { raise Invalid("expected JSON array") }
   if items.length() > limit {
     raise Budget("JSON array exceeds supported length")
@@ -77,7 +77,7 @@ fn json_array(value : Json, limit : Int) -> Array[Json] raise ChoiceError {
 }
 
 ///|
-fn json_numbers(value : Json, limit : Int) -> Array[Double] raise ChoiceError {
+fn json_numbers(value : Json, limit : Int32) -> Array[Double] raise ChoiceError {
   json_array(value, limit).map(json_number)
 }
 
@@ -113,12 +113,12 @@ pub fn decode_matrix(text : String) -> DecisionMatrix raise ChoiceError {
 pub fn DecisionMatrix::to_json(self : DecisionMatrix) -> Json {
   Json::object({
     "schema": Json::string("moonchoice.matrix/1"),
-    "alternatives": self.names.to_json(),
-    "criteria": self.criteria.to_json(),
-    "directions": self.directions
-    .map(d => if d == Benefit { "benefit" } else { "cost" })
-    .to_json(),
-    "values": self.cells.to_json(),
+    "alternatives": Json(self.names),
+    "criteria": Json(self.criteria),
+    "directions": Json(
+      self.directions.map(d => if d == Benefit { "benefit" } else { "cost" }),
+    ),
+    "values": Json(self.cells),
   })
 }
 
@@ -133,12 +133,12 @@ pub fn ranking_json(ranking : Ranking) -> Json raise ChoiceError {
   let r = validated_ranking(ranking)
   Json::object({
     "schema": Json::string("moonchoice.ranking/1"),
-    "labels": r.labels.to_json(),
-    "scores": r.scores.to_json(),
-    "order": r.order.to_json(),
-    "ranks": r.ranks.to_json(),
-    "higher_is_better": r.higher_is_better.to_json(),
-    "tie_tolerance": r.tie_tolerance.to_json(),
-    "winners": r.winners().to_json(),
+    "labels": Json(r.labels),
+    "scores": Json(r.scores),
+    "order": Json(r.order),
+    "ranks": Json(r.ranks),
+    "higher_is_better": Json(r.higher_is_better),
+    "tie_tolerance": Json(r.tie_tolerance),
+    "winners": Json(r.winners()),
   })
 }

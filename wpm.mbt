@@ -10,7 +10,7 @@ pub(all) struct ProductResult {
 pub fn weighted_product(
   m : DecisionMatrix,
   weights : Array[Double],
-  tolerance? : Double = 1.0e-10,
+  tolerance~ : Double = 1.0e-10,
 ) -> ProductResult raise ChoiceError {
   let w = matrix_weights(m, weights)
   let (n, p) = m.shape()

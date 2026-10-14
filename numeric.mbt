@@ -40,7 +40,7 @@ fn valid_tolerance(t : Double) -> Unit raise ChoiceError {
 }
 
 ///|
-fn zeros(n : Int, p : Int) -> Array[Array[Double]] {
+fn zeros(n : Int32, p : Int32) -> Array[Array[Double]] {
   [
     for _ in 0..<n => Array::make(p, 0.0)
   ]

@@ -25,8 +25,8 @@ pub fn explain_pair(
   m : DecisionMatrix,
   weights : Array[Double],
   preferences : Array[Preference],
-  left : Int,
-  right : Int,
+  left : Int32,
+  right : Int32,
 ) -> PairExplanation raise ChoiceError {
   let w = matrix_weights(m, weights)
   preference_specs(m, preferences)
@@ -83,9 +83,9 @@ pub(all) struct AdditiveBreakEven {
 pub fn additive_break_even(
   m : DecisionMatrix,
   weights : Array[Double],
-  criterion : Int,
-  left : Int,
-  right : Int,
+  criterion : Int32,
+  left : Int32,
+  right : Int32,
 ) -> AdditiveBreakEven raise ChoiceError {
   let w = matrix_weights(m, weights)
   if w.length() < 2 {

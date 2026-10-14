@@ -25,7 +25,7 @@ pub fn promethee(
   m : DecisionMatrix,
   weights : Array[Double],
   preferences : Array[Preference],
-  tolerance? : Double = 1.0e-10,
+  tolerance~ : Double = 1.0e-10,
 ) -> PrometheeResult raise ChoiceError {
   let w = matrix_weights(m, weights)
   preference_specs(m, preferences)

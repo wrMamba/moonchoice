@@ -10,8 +10,8 @@ pub(all) struct AdditiveResult {
 pub fn saw(
   m : DecisionMatrix,
   weights : Array[Double],
-  normalization? : Normalization = MinMax,
-  tolerance? : Double = 1.0e-10,
+  normalization~ : Normalization = MinMax,
+  tolerance~ : Double = 1.0e-10,
 ) -> AdditiveResult raise ChoiceError {
   let w = matrix_weights(m, weights)
   let x = m.normalize(normalization)

@@ -6,7 +6,7 @@ pub(all) struct CriterionProfile {
   maximum : Double
   mean : Double
   population_deviation : Double
-  distinct_values : Int
+  distinct_values : Int32
   constant : Bool
   normalized_weight : Double
 } derive(@debug.Debug)
@@ -153,25 +153,25 @@ pub fn decision_report(
 pub fn report_json(report : DecisionReport) -> Json raise ChoiceError {
   let profiles = report.profiles.map(p => {
     Json::object({
-      "name": p.name.to_json(),
-      "direction": (if p.direction == Benefit { "benefit" } else { "cost" }).to_json(),
-      "minimum": p.minimum.to_json(),
-      "maximum": p.maximum.to_json(),
-      "mean": p.mean.to_json(),
-      "population_deviation": p.population_deviation.to_json(),
-      "distinct_values": p.distinct_values.to_json(),
-      "constant": p.constant.to_json(),
-      "normalized_weight": p.normalized_weight.to_json(),
+      "name": Json(p.name),
+      "direction": Json(if p.direction == Benefit { "benefit" } else { "cost" }),
+      "minimum": Json(p.minimum),
+      "maximum": Json(p.maximum),
+      "mean": Json(p.mean),
+      "population_deviation": Json(p.population_deviation),
+      "distinct_values": Json(p.distinct_values),
+      "constant": Json(p.constant),
+      "normalized_weight": Json(p.normalized_weight),
     })
   })
   Json::object({
-    "schema": "moonchoice.report/1".to_json(),
+    "schema": Json("moonchoice.report/1"),
     "ranking": ranking_json(report.ranking),
-    "weights": report.weights.to_json(),
+    "weights": Json(report.weights),
     "profiles": Json::array(profiles),
-    "pareto_fronts": report.pareto.fronts.to_json(),
-    "additive_minmax_contributions": report.additive_contributions.to_json(),
-    "warnings": report.warnings.to_json(),
+    "pareto_fronts": Json(report.pareto.fronts),
+    "additive_minmax_contributions": Json(report.additive_contributions),
+    "warnings": Json(report.warnings),
   })
 }
 

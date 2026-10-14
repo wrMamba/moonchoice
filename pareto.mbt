@@ -1,12 +1,12 @@
 ///|
 pub(all) struct ParetoResult {
   fronts : Array[Array[String]]
-  front_indices : Array[Int]
-  dominated_by : Array[Array[Int]]
+  front_indices : Array[Int32]
+  dominated_by : Array[Array[Int32]]
 } derive(@debug.Debug)
 
 ///|
-fn dominates(m : DecisionMatrix, a : Int, b : Int) -> Bool {
+fn dominates(m : DecisionMatrix, a : Int32, b : Int32) -> Bool {
   let mut strictly = false
   for j in 0..<m.criteria.length() {
     let x = m.cells[a][j]
@@ -34,8 +34,8 @@ fn dominates(m : DecisionMatrix, a : Int, b : Int) -> Bool {
 /// Exact dominance, intentionally without tolerance that could break transitivity.
 pub fn pareto_fronts(m : DecisionMatrix) -> ParetoResult {
   let n = m.names.length()
-  let dominated_by : Array[Array[Int]] = [ for _ in 0..<n => [] ]
-  let successors : Array[Array[Int]] = [ for _ in 0..<n => [] ]
+  let dominated_by : Array[Array[Int32]] = [ for _ in 0..<n => [] ]
+  let successors : Array[Array[Int32]] = [ for _ in 0..<n => [] ]
   for a in 0..<n {
     for b in 0..<n {
       if a != b && dominates(m, a, b) {

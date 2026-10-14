@@ -182,7 +182,7 @@ pub fn encode_csv(m : DecisionMatrix) -> String {
   for i, name in m.names {
     let row = [name]
     for value in m.cells[i] {
-      row.push(value.to_json().stringify())
+      row.push(Json(value).stringify())
     }
     builder.write_string(csv_line(row))
   }

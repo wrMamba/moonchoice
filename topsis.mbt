@@ -13,8 +13,8 @@ pub(all) struct TopsisResult {
 pub fn topsis(
   m : DecisionMatrix,
   weights : Array[Double],
-  normalization? : Normalization = MinMax,
-  tolerance? : Double = 1.0e-10,
+  normalization~ : Normalization = MinMax,
+  tolerance~ : Double = 1.0e-10,
 ) -> TopsisResult raise ChoiceError {
   let w = matrix_weights(m, weights)
   let x = m.normalize(normalization)

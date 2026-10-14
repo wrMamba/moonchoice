@@ -17,13 +17,13 @@ fn main raise {
   let crossing = @choice.additive_break_even(m, [0.5, 0.5], 0, 1, 2)
   assert_true(crossing.crossing is Some(x) && (x - 0.5).abs() < 1.0e-12)
   let request = Json::object({
-    "schema": "moonchoice.request/1".to_json(),
-    "operation": "scenarios".to_json(),
+    "schema": Json("moonchoice.request/1"),
+    "operation": Json("scenarios"),
     "matrix": m.to_json(),
-    "scenarios": grid.to_json(),
+    "scenarios": Json(grid),
     "algorithm": Json::object({
-      "kind": "saw".to_json(),
-      "normalization": "minmax".to_json(),
+      "kind": Json("saw"),
+      "normalization": Json("minmax"),
     }),
   })
   let response = @choice.parse_document(@choice.dispatch(request.stringify()))

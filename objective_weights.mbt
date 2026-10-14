@@ -19,7 +19,7 @@ fn weight_estimate(
 }
 
 ///|
-fn column_moments(x : Array[Array[Double]], j : Int) -> (Double, Double) {
+fn column_moments(x : Array[Array[Double]], j : Int32) -> (Double, Double) {
   let values = x.map(row => row[j])
   let mean = sum(values) / x.length().to_double()
   let variance = sum(

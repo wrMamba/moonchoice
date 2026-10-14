@@ -1,13 +1,13 @@
 ///|
 test "JSON service executes reports and returns stable errors" {
   let request = Json::object({
-    "schema": "moonchoice.request/1".to_json(),
-    "operation": "report".to_json(),
+    "schema": Json("moonchoice.request/1"),
+    "operation": Json("report"),
     "matrix": sample().to_json(),
-    "weights": [0.5, 0.5].to_json(),
+    "weights": Json([0.5, 0.5]),
     "algorithm": Json::object({
-      "kind": "topsis".to_json(),
-      "normalization": "minmax".to_json(),
+      "kind": Json("topsis"),
+      "normalization": Json("minmax"),
     }),
   })
   let response = object_fields(parse_document(dispatch(request.stringify())), [

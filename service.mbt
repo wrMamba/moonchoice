@@ -66,17 +66,19 @@ fn method_from_json(value : Json) -> Method raise ChoiceError {
 ///|
 fn scenario_json(report : ScenarioReport) -> Json raise ChoiceError {
   Json::object({
-    "schema": "moonchoice.scenarios/1".to_json(),
+    "schema": Json("moonchoice.scenarios/1"),
     "rankings": Json::array(report.rankings.map(ranking_json)),
-    "rank_counts": report.rank_counts.to_json(),
-    "winner_counts": report.winner_counts.to_json(),
-    "mean_ranks": report.mean_ranks.to_json(),
-    "best_ranks": report.best_ranks.to_json(),
-    "worst_ranks": report.worst_ranks.to_json(),
-    "universally_best": report.universally_best.to_json(),
-    "pairwise_wins": report.pairwise_wins.to_json(),
-    "pairwise_ties": report.pairwise_ties.to_json(),
-    "frequency_interpretation": "finite supplied scenarios, not probabilities".to_json(),
+    "rank_counts": Json(report.rank_counts),
+    "winner_counts": Json(report.winner_counts),
+    "mean_ranks": Json(report.mean_ranks),
+    "best_ranks": Json(report.best_ranks),
+    "worst_ranks": Json(report.worst_ranks),
+    "universally_best": Json(report.universally_best),
+    "pairwise_wins": Json(report.pairwise_wins),
+    "pairwise_ties": Json(report.pairwise_ties),
+    "frequency_interpretation": Json(
+      "finite supplied scenarios, not probabilities",
+    ),
   })
 }
 
@@ -122,8 +124,8 @@ pub fn dispatch(request : String) -> String {
   let response = try {
     let result = execute_request(parse_document(request))
     Json::object({
-      "schema": "moonchoice.response/1".to_json(),
-      "ok": true.to_json(),
+      "schema": Json("moonchoice.response/1"),
+      "ok": Json(true),
       "result": result,
     })
   } catch {
@@ -137,11 +139,8 @@ pub fn dispatch(request : String) -> String {
 ///|
 fn error_response(kind : String, message : String) -> Json {
   Json::object({
-    "schema": "moonchoice.response/1".to_json(),
-    "ok": false.to_json(),
-    "error": Json::object({
-      "kind": kind.to_json(),
-      "message": message.to_json(),
-    }),
+    "schema": Json("moonchoice.response/1"),
+    "ok": Json(false),
+    "error": Json::object({ "kind": Json(kind), "message": Json(message) }),
   })
 }

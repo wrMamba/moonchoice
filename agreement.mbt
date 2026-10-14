@@ -2,17 +2,17 @@
 pub(all) struct RankAgreement {
   spearman : Double?
   kendall_tau_b : Double?
-  concordant_pairs : Int
-  discordant_pairs : Int
+  concordant_pairs : Int32
+  discordant_pairs : Int32
   shared_winners : Array[String]
 } derive(@debug.Debug)
 
 ///|
-fn aligned_indices(a : Ranking, b : Ranking) -> Array[Int] raise ChoiceError {
+fn aligned_indices(a : Ranking, b : Ranking) -> Array[Int32] raise ChoiceError {
   if a.labels.length() != b.labels.length() {
     raise Invalid("ranking label sets differ")
   }
-  let indices : Array[Int] = []
+  let indices : Array[Int32] = []
   for label in a.labels {
     let mut found = -1
     for j, candidate in b.labels {
