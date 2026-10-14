@@ -4,7 +4,7 @@ pub(all) struct PrometheeResult {
   preference_matrix : Array[Array[Double]]
   positive_flow : Array[Double]
   negative_flow : Array[Double]
-} derive(Debug)
+} derive(@debug.Debug)
 
 ///|
 fn preference_specs(m : DecisionMatrix, specs : Array[Preference]) -> Unit raise ChoiceError {
@@ -45,3 +45,6 @@ pub fn promethee(m : DecisionMatrix, weights : Array[Double], preferences : Arra
   }
   { ranking: rank_scores(m.names, net, tolerance~), preference_matrix: pi, positive_flow, negative_flow }
 }
+
+///|
+pub extend PrometheeResult with @debug.Debug::{to_repr}

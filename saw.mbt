@@ -4,7 +4,7 @@ pub(all) struct AdditiveResult {
   normalized : Array[Array[Double]]
   contributions : Array[Array[Double]]
   weights : Array[Double]
-} derive(Debug)
+} derive(@debug.Debug)
 
 ///|
 pub fn saw(m : DecisionMatrix, weights : Array[Double], normalization~ : Normalization = MinMax, tolerance~ : Double = 1.0e-10) -> AdditiveResult raise ChoiceError {
@@ -21,3 +21,6 @@ pub fn saw(m : DecisionMatrix, weights : Array[Double], normalization~ : Normali
   }
   { ranking: rank_scores(m.names, scores, tolerance~), normalized: x, contributions, weights: w }
 }
+
+///|
+pub extend AdditiveResult with @debug.Debug::{to_repr}

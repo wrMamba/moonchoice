@@ -6,7 +6,7 @@ pub(all) struct Ranking {
   ranks : Array[Int]
   higher_is_better : Bool
   tie_tolerance : Double
-} derive(Debug)
+} derive(@debug.Debug)
 
 ///|
 /// Stable exact sort, followed by anchor-based competition-rank tie groups.
@@ -66,3 +66,6 @@ pub fn Ranking::top(self : Ranking, count : Int) -> Array[String] raise ChoiceEr
   }
   [ for k in 0..<count => r.labels[r.order[k]] ]
 }
+
+///|
+pub extend Ranking with @debug.Debug::{to_repr}

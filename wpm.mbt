@@ -3,7 +3,7 @@ pub(all) struct ProductResult {
   ranking : Ranking
   log_contributions : Array[Array[Double]]
   relative_products : Array[Double]
-} derive(Debug)
+} derive(@debug.Debug)
 
 ///|
 /// Scores are log products; relative_products are exp(score - best_score).
@@ -30,3 +30,6 @@ pub fn weighted_product(m : DecisionMatrix, weights : Array[Double], tolerance~ 
   let relative_products = scores.map(x => @math.exp(x - best))
   { ranking: rank_scores(m.names, scores, tolerance~), log_contributions: terms, relative_products }
 }
+
+///|
+pub extend ProductResult with @debug.Debug::{to_repr}

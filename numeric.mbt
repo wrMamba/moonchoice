@@ -3,7 +3,7 @@ pub suberror ChoiceError {
   Invalid(String)
   Budget(String)
   Numerical(String)
-} derive(Debug)
+} derive(@debug.Debug)
 
 ///|
 fn finite(x : Double) -> Bool {
@@ -82,3 +82,6 @@ fn sum(x : Array[Double]) -> Double {
   }
   total + correction
 }
+
+///|
+pub extend ChoiceError with @debug.Debug::{to_repr}

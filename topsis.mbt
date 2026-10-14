@@ -7,7 +7,7 @@ pub(all) struct TopsisResult {
   anti_ideal : Array[Double]
   distance_ideal : Array[Double]
   distance_anti_ideal : Array[Double]
-} derive(Debug)
+} derive(@debug.Debug)
 
 ///|
 pub fn topsis(m : DecisionMatrix, weights : Array[Double], normalization~ : Normalization = MinMax, tolerance~ : Double = 1.0e-10) -> TopsisResult raise ChoiceError {
@@ -43,3 +43,6 @@ pub fn topsis(m : DecisionMatrix, weights : Array[Double], normalization~ : Norm
   }
   { ranking: rank_scores(m.names, scores, tolerance~), normalized: x, weighted, ideal, anti_ideal, distance_ideal, distance_anti_ideal }
 }
+
+///|
+pub extend TopsisResult with @debug.Debug::{to_repr}

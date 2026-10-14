@@ -2,7 +2,7 @@
 pub(all) enum Direction {
   Benefit
   Cost
-} derive(Debug, Eq)
+} derive(@debug.Debug, Eq)
 
 ///|
 /// Validated immutable matrix; all array accessors return defensive copies.
@@ -101,3 +101,9 @@ pub fn DecisionMatrix::column(self : DecisionMatrix, column : Int) -> Array[Doub
   }
   self.cells.map(row => row[column])
 }
+
+///|
+pub extend Direction with @debug.Debug::{to_repr}
+
+///|
+pub extend Direction with Eq::{equal, not_equal}

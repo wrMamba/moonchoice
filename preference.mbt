@@ -6,7 +6,7 @@ pub(all) enum Preference {
   Level(Double, Double)
   Linear(Double, Double)
   Gaussian(Double)
-} derive(Debug)
+} derive(@debug.Debug)
 
 ///|
 fn valid_preference(pref : Preference) -> Unit raise ChoiceError {
@@ -51,3 +51,6 @@ pub fn preference_degree(pref : Preference, difference : Double) -> Double raise
   input_number(difference)
   preference_unchecked(pref, difference)
 }
+
+///|
+pub extend Preference with @debug.Debug::{to_repr}

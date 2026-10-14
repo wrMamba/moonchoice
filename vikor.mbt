@@ -7,7 +7,7 @@ pub(all) struct VikorResult {
   compromise : Array[String]
   acceptable_advantage : Bool
   acceptable_stability : Bool
-} derive(Debug)
+} derive(@debug.Debug)
 
 ///|
 pub fn vikor(m : DecisionMatrix, weights : Array[Double], v~ : Double = 0.5, tolerance~ : Double = 1.0e-10) -> VikorResult raise ChoiceError {
@@ -57,3 +57,6 @@ pub fn vikor(m : DecisionMatrix, weights : Array[Double], v~ : Double = 0.5, tol
   }
   { ranking, utility, regret, criterion_regrets: losses, compromise, acceptable_advantage, acceptable_stability }
 }
+
+///|
+pub extend VikorResult with @debug.Debug::{to_repr}

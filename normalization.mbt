@@ -2,7 +2,7 @@
 pub(all) enum Normalization {
   MinMax
   Vector
-} derive(Debug, Eq)
+} derive(@debug.Debug, Eq)
 
 ///|
 pub fn normalize_weights(weights : Array[Double]) -> Array[Double] raise ChoiceError {
@@ -69,3 +69,9 @@ pub fn DecisionMatrix::normalize(self : DecisionMatrix, mode : Normalization) ->
   }
   out
 }
+
+///|
+pub extend Normalization with @debug.Debug::{to_repr}
+
+///|
+pub extend Normalization with Eq::{equal, not_equal}
