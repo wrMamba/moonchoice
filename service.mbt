@@ -24,8 +24,10 @@ fn preference_from_json(value : Json) -> Preference raise ChoiceError {
     "usual" => Usual
     "ushape" => UShape(json_number(required(f, "q")))
     "vshape" => VShape(json_number(required(f, "p")))
-    "level" => Level(json_number(required(f, "q")), json_number(required(f, "p")))
-    "linear" => Linear(json_number(required(f, "q")), json_number(required(f, "p")))
+    "level" =>
+      Level(json_number(required(f, "q")), json_number(required(f, "p")))
+    "linear" =>
+      Linear(json_number(required(f, "q")), json_number(required(f, "p")))
     _ => Gaussian(json_number(required(f, "sigma")))
   }
   valid_preference(preference)
@@ -46,14 +48,18 @@ fn method_from_json(value : Json) -> Method raise ChoiceError {
   let _ = object_fields(value, allowed)
   match kind {
     "saw" => Additive(normalization_from_json(required(f, "normalization")))
-    "topsis" => IdealDistance(normalization_from_json(required(f, "normalization")))
+    "topsis" =>
+      IdealDistance(normalization_from_json(required(f, "normalization")))
     "product" => Product
     "vikor" => {
       let v = json_number(required(f, "v"))
       probability(v)
       Compromise(v)
     }
-    _ => Outranking(json_array(required(f, "preferences"), 32).map(preference_from_json))
+    _ =>
+      Outranking(
+        json_array(required(f, "preferences"), 32).map(preference_from_json),
+      )
   }
 }
 
@@ -76,22 +82,34 @@ fn scenario_json(report : ScenarioReport) -> Json raise ChoiceError {
 
 ///|
 fn execute_request(value : Json) -> Json raise ChoiceError {
-  let f = object_fields(value, ["schema", "operation", "matrix", "weights", "algorithm", "scenarios"])
+  let f = object_fields(value, [
+    "schema", "operation", "matrix", "weights", "algorithm", "scenarios",
+  ])
   if json_string(required(f, "schema")) != "moonchoice.request/1" {
     raise Invalid("unsupported request schema")
   }
   let operation = json_string(required(f, "operation"))
   let allowed = if operation == "scenarios" {
     ["schema", "operation", "matrix", "algorithm", "scenarios"]
-  } else { ["schema", "operation", "matrix", "algorithm", "weights"] }
+  } else {
+    ["schema", "operation", "matrix", "algorithm", "weights"]
+  }
   let _ = object_fields(value, allowed)
   let m = matrix_from_json(required(f, "matrix"))
   let algorithm = method_from_json(required(f, "algorithm"))
   match operation {
-    "rank" => ranking_json(evaluate(m, json_numbers(required(f, "weights"), 32), algorithm))
-    "report" => report_json(decision_report(m, json_numbers(required(f, "weights"), 32), algorithm))
+    "rank" =>
+      ranking_json(
+        evaluate(m, json_numbers(required(f, "weights"), 32), algorithm),
+      )
+    "report" =>
+      report_json(
+        decision_report(m, json_numbers(required(f, "weights"), 32), algorithm),
+      )
     "scenarios" => {
-      let scenarios = json_array(required(f, "scenarios"), 64).map(row => json_numbers(row, 32))
+      let scenarios = json_array(required(f, "scenarios"), 64).map(row => {
+        json_numbers(row, 32)
+      })
       scenario_json(weight_scenarios(m, scenarios, algorithm))
     }
     _ => raise Invalid("operation must be rank, report or scenarios")
@@ -103,7 +121,11 @@ fn execute_request(value : Json) -> Json raise ChoiceError {
 pub fn dispatch(request : String) -> String {
   let response = try {
     let result = execute_request(parse_document(request))
-    Json::object({ "schema": "moonchoice.response/1".to_json(), "ok": true.to_json(), "result": result })
+    Json::object({
+      "schema": "moonchoice.response/1".to_json(),
+      "ok": true.to_json(),
+      "result": result,
+    })
   } catch {
     Invalid(message) => error_response("invalid", message)
     Budget(message) => error_response("budget", message)
@@ -115,7 +137,11 @@ pub fn dispatch(request : String) -> String {
 ///|
 fn error_response(kind : String, message : String) -> Json {
   Json::object({
-    "schema": "moonchoice.response/1".to_json(), "ok": false.to_json(),
-    "error": Json::object({ "kind": kind.to_json(), "message": message.to_json() }),
+    "schema": "moonchoice.response/1".to_json(),
+    "ok": false.to_json(),
+    "error": Json::object({
+      "kind": kind.to_json(),
+      "message": message.to_json(),
+    }),
   })
 }

@@ -7,26 +7,42 @@ pub(all) struct PrometheeResult {
 } derive(@debug.Debug)
 
 ///|
-fn preference_specs(m : DecisionMatrix, specs : Array[Preference]) -> Unit raise ChoiceError {
+fn preference_specs(
+  m : DecisionMatrix,
+  specs : Array[Preference],
+) -> Unit raise ChoiceError {
   if specs.length() != m.criteria.length() {
     raise Invalid("preference specification count mismatch")
   }
-  for spec in specs { valid_preference(spec) }
+  for spec in specs {
+    valid_preference(spec)
+  }
 }
 
 ///|
 /// Thresholds are in raw criterion units, not normalized units.
-pub fn promethee(m : DecisionMatrix, weights : Array[Double], preferences : Array[Preference], tolerance~ : Double = 1.0e-10) -> PrometheeResult raise ChoiceError {
+pub fn promethee(
+  m : DecisionMatrix,
+  weights : Array[Double],
+  preferences : Array[Preference],
+  tolerance? : Double = 1.0e-10,
+) -> PrometheeResult raise ChoiceError {
   let w = matrix_weights(m, weights)
   preference_specs(m, preferences)
   let (n, p) = m.shape()
   let pi = zeros(n, n)
   for i in 0..<n {
     for k in 0..<n {
-      if i == k { continue }
+      if i == k {
+        continue
+      }
       let terms = Array::make(p, 0.0)
       for j in 0..<p {
-        let delta = if m.directions[j] == Benefit { m.cells[i][j] - m.cells[k][j] } else { m.cells[k][j] - m.cells[i][j] }
+        let delta = if m.directions[j] == Benefit {
+          m.cells[i][j] - m.cells[k][j]
+        } else {
+          m.cells[k][j] - m.cells[i][j]
+        }
         terms[j] = w[j] * preference_unchecked(preferences[j], delta)
       }
       pi[i][k] = sum(terms)
@@ -43,7 +59,12 @@ pub fn promethee(m : DecisionMatrix, weights : Array[Double], preferences : Arra
       net[i] = positive_flow[i] - negative_flow[i]
     }
   }
-  { ranking: rank_scores(m.names, net, tolerance~), preference_matrix: pi, positive_flow, negative_flow }
+  {
+    ranking: rank_scores(m.names, net, tolerance~),
+    preference_matrix: pi,
+    positive_flow,
+    negative_flow,
+  }
 }
 
 ///|

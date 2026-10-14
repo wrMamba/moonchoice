@@ -10,7 +10,12 @@ pub(all) struct VikorResult {
 } derive(@debug.Debug)
 
 ///|
-pub fn vikor(m : DecisionMatrix, weights : Array[Double], v~ : Double = 0.5, tolerance~ : Double = 1.0e-10) -> VikorResult raise ChoiceError {
+pub fn vikor(
+  m : DecisionMatrix,
+  weights : Array[Double],
+  v? : Double = 0.5,
+  tolerance? : Double = 1.0e-10,
+) -> VikorResult raise ChoiceError {
   probability(v)
   let w = matrix_weights(m, weights)
   let x = m.normalize(MinMax)
@@ -32,22 +37,28 @@ pub fn vikor(m : DecisionMatrix, weights : Array[Double], v~ : Double = 0.5, tol
   let shi = maximum(utility)
   let rlo = minimum(regret)
   let rhi = maximum(regret)
-  let scores = [ for i in 0..<n => {
-    let s = if shi == slo { 0.0 } else { (utility[i] - slo) / (shi - slo) }
-    let r = if rhi == rlo { 0.0 } else { (regret[i] - rlo) / (rhi - rlo) }
-    v * s + (1.0 - v) * r
-  } ]
+  let scores = [
+    for i in 0..<n => {
+      let s = if shi == slo { 0.0 } else { (utility[i] - slo) / (shi - slo) }
+      let r = if rhi == rlo { 0.0 } else { (regret[i] - rlo) / (rhi - rlo) }
+      v * s + (1.0 - v) * r
+    }
+  ]
   let ranking = rank_scores(m.names, scores, higher_is_better=false, tolerance~)
   let best = ranking.order[0]
-  let acceptable_stability = utility[best] <= slo + tolerance || regret[best] <= rlo + tolerance
+  let acceptable_stability = utility[best] <= slo + tolerance ||
+    regret[best] <= rlo + tolerance
   let threshold = if n <= 1 { 0.0 } else { 1.0 / (n - 1).to_double() }
-  let acceptable_advantage = n <= 1 || scores[ranking.order[1]] - scores[best] + tolerance >= threshold
+  let acceptable_advantage = n <= 1 ||
+    scores[ranking.order[1]] - scores[best] + tolerance >= threshold
   let compromise : Array[String] = []
   if acceptable_advantage && acceptable_stability {
     compromise.push(m.names[best])
   } else if acceptable_advantage {
     compromise.push(m.names[best])
-    if n > 1 { compromise.push(m.names[ranking.order[1]]) }
+    if n > 1 {
+      compromise.push(m.names[ranking.order[1]])
+    }
   } else {
     for i in ranking.order {
       if scores[i] - scores[best] < threshold || ranking.ranks[i] == 1 {
@@ -55,7 +66,15 @@ pub fn vikor(m : DecisionMatrix, weights : Array[Double], v~ : Double = 0.5, tol
       }
     }
   }
-  { ranking, utility, regret, criterion_regrets: losses, compromise, acceptable_advantage, acceptable_stability }
+  {
+    ranking,
+    utility,
+    regret,
+    criterion_regrets: losses,
+    compromise,
+    acceptable_advantage,
+    acceptable_stability,
+  }
 }
 
 ///|

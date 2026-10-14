@@ -41,7 +41,9 @@ fn valid_tolerance(t : Double) -> Unit raise ChoiceError {
 
 ///|
 fn zeros(n : Int, p : Int) -> Array[Array[Double]] {
-  [ for _ in 0..<n => Array::make(p, 0.0) ]
+  [
+    for _ in 0..<n => Array::make(p, 0.0)
+  ]
 }
 
 ///|
@@ -74,9 +76,9 @@ fn sum(x : Array[Double]) -> Double {
   for value in x {
     let next = total + value
     correction += if total.abs() >= value.abs() {
-      (total - next) + value
+      total - next + value
     } else {
-      (value - next) + total
+      value - next + total
     }
     total = next
   }

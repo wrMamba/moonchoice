@@ -5,7 +5,9 @@ pub(all) enum Normalization {
 } derive(@debug.Debug, Eq)
 
 ///|
-pub fn normalize_weights(weights : Array[Double]) -> Array[Double] raise ChoiceError {
+pub fn normalize_weights(
+  weights : Array[Double],
+) -> Array[Double] raise ChoiceError {
   if weights.length() == 0 || weights.length() > 32 {
     raise Budget("weight count must be 1..32")
   }
@@ -25,7 +27,10 @@ pub fn normalize_weights(weights : Array[Double]) -> Array[Double] raise ChoiceE
 }
 
 ///|
-fn matrix_weights(m : DecisionMatrix, weights : Array[Double]) -> Array[Double] raise ChoiceError {
+fn matrix_weights(
+  m : DecisionMatrix,
+  weights : Array[Double],
+) -> Array[Double] raise ChoiceError {
   if weights.length() != m.criteria.length() {
     raise Invalid("weight count differs from criterion count")
   }
@@ -34,7 +39,10 @@ fn matrix_weights(m : DecisionMatrix, weights : Array[Double]) -> Array[Double] 
 
 ///|
 /// Benefit-oriented values. Vector-normalized cost criteria are negated.
-pub fn DecisionMatrix::normalize(self : DecisionMatrix, mode : Normalization) -> Array[Array[Double]] raise ChoiceError {
+pub fn DecisionMatrix::normalize(
+  self : DecisionMatrix,
+  mode : Normalization,
+) -> Array[Array[Double]] raise ChoiceError {
   let (n, p) = self.shape()
   let out = zeros(n, p)
   for j in 0..<p {
@@ -57,7 +65,12 @@ pub fn DecisionMatrix::normalize(self : DecisionMatrix, mode : Normalization) ->
       Vector => {
         let scale = maximum(col.map(x => x.abs()))
         if scale > 0.0 {
-          let square_sum = sum(col.map(x => { let y = x / scale; y * y }))
+          let square_sum = sum(
+            col.map(x => {
+              let y = x / scale
+              y * y
+            }),
+          )
           let norm = square_sum.sqrt()
           let sign = if self.directions[j] == Benefit { 1.0 } else { -1.0 }
           for i in 0..<n {

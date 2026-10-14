@@ -12,11 +12,19 @@ fn dominates(m : DecisionMatrix, a : Int, b : Int) -> Bool {
     let x = m.cells[a][j]
     let y = m.cells[b][j]
     if m.directions[j] == Benefit {
-      if x < y { return false }
-      if x > y { strictly = true }
+      if x < y {
+        return false
+      }
+      if x > y {
+        strictly = true
+      }
     } else {
-      if x > y { return false }
-      if x < y { strictly = true }
+      if x > y {
+        return false
+      }
+      if x < y {
+        strictly = true
+      }
     }
   }
   strictly
@@ -43,13 +51,19 @@ pub fn pareto_fronts(m : DecisionMatrix) -> ParetoResult {
   while current.length() > 0 {
     let index = fronts.length()
     fronts.push(current.map(i => m.names[i]))
-    for i in current { front_indices[i] = index }
     for i in current {
-      for k in successors[i] { remaining[k] -= 1 }
+      front_indices[i] = index
     }
-    current = [ for i in 0..<n if front_indices[i] == -1 && remaining[i] == 0 => i ]
+    for i in current {
+      for k in successors[i] {
+        remaining[k] -= 1
+      }
+    }
+    current = [
+      for i in 0..<n if front_indices[i] == -1 && remaining[i] == 0 => i
+    ]
   }
-  { fronts, front_indices, dominated_by }
+  { fronts, front_indices, dominated_by, }
 }
 
 ///|

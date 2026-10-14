@@ -1,33 +1,47 @@
 ///|
 /// Bounded parse: at most 1 Mi code units, with at most eight nested containers.
 pub fn parse_document(text : String) -> Json raise ChoiceError {
-  if text.length() > 1048576 { raise Budget("JSON document exceeds 1 Mi code units") }
+  if text.length() > 1048576 {
+    raise Budget("JSON document exceeds 1 Mi code units")
+  }
   let mut depth = 0
   let mut in_string = false
   let mut escaped = false
   for c in text.iter() {
     if in_string {
-      if escaped { escaped = false }
-      else if c == '\\' { escaped = true }
-      else if c == '"' { in_string = false }
-    } else {
-      if c == '"' { in_string = true }
-      else if c == '[' || c == '{' {
-        depth += 1
-        if depth > 8 { raise Budget("JSON nesting exceeds eight containers") }
-      } else if c == ']' || c == '}' { depth -= 1 }
+      if escaped {
+        escaped = false
+      } else if c == '\\' {
+        escaped = true
+      } else if c == '"' {
+        in_string = false
+      }
+    } else if c == '"' {
+      in_string = true
+    } else if c == '[' || c == '{' {
+      depth += 1
+      if depth > 8 {
+        raise Budget("JSON nesting exceeds eight containers")
+      }
+    } else if c == ']' || c == '}' {
+      depth -= 1
     }
   }
-  try @json.parse(text[:]) catch {
+  @json.parse(text[:]) catch {
     _ => raise Invalid("invalid JSON or excessive nesting")
   }
 }
 
 ///|
-fn object_fields(value : Json, allowed : Array[String]) -> Map[String, Json] raise ChoiceError {
+fn object_fields(
+  value : Json,
+  allowed : Array[String],
+) -> Map[String, Json] raise ChoiceError {
   guard value is Object(fields) else { raise Invalid("expected a JSON object") }
   for key, _ in fields {
-    if !allowed.contains(key) { raise Invalid("unknown JSON field: " + key) }
+    if !allowed.contains(key) {
+      raise Invalid("unknown JSON field: " + key)
+    }
   }
   fields
 }
@@ -56,7 +70,9 @@ fn json_number(value : Json) -> Double raise ChoiceError {
 ///|
 fn json_array(value : Json, limit : Int) -> Array[Json] raise ChoiceError {
   guard value is Array(items) else { raise Invalid("expected JSON array") }
-  if items.length() > limit { raise Budget("JSON array exceeds supported length") }
+  if items.length() > limit {
+    raise Budget("JSON array exceeds supported length")
+  }
   items
 }
 
@@ -67,7 +83,9 @@ fn json_numbers(value : Json, limit : Int) -> Array[Double] raise ChoiceError {
 
 ///|
 fn matrix_from_json(value : Json) -> DecisionMatrix raise ChoiceError {
-  let f = object_fields(value, ["schema", "alternatives", "criteria", "directions", "values"])
+  let f = object_fields(value, [
+    "schema", "alternatives", "criteria", "directions", "values",
+  ])
   if json_string(required(f, "schema")) != "moonchoice.matrix/1" {
     raise Invalid("unsupported matrix schema")
   }
@@ -80,7 +98,9 @@ fn matrix_from_json(value : Json) -> DecisionMatrix raise ChoiceError {
       _ => raise Invalid("direction must be benefit or cost")
     }
   })
-  let values = json_array(required(f, "values"), 256).map(row => json_numbers(row, 32))
+  let values = json_array(required(f, "values"), 256).map(row => {
+    json_numbers(row, 32)
+  })
   decision_matrix(names, criteria, directions, values)
 }
 
@@ -95,7 +115,9 @@ pub fn DecisionMatrix::to_json(self : DecisionMatrix) -> Json {
     "schema": Json::string("moonchoice.matrix/1"),
     "alternatives": self.names.to_json(),
     "criteria": self.criteria.to_json(),
-    "directions": self.directions.map(d => if d == Benefit { "benefit" } else { "cost" }).to_json(),
+    "directions": self.directions
+    .map(d => if d == Benefit { "benefit" } else { "cost" })
+    .to_json(),
     "values": self.cells.to_json(),
   })
 }

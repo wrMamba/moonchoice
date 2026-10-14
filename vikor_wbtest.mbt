@@ -1,6 +1,9 @@
 ///|
 test "VIKOR supports degenerate criteria and singleton compromise" {
-  let m = decision_matrix(["A", "B"], ["x", "y"], [Benefit, Cost], [[1.0, 2.0], [3.0, 2.0]])
+  let m = decision_matrix(["A", "B"], ["x", "y"], [Benefit, Cost], [
+    [1.0, 2.0],
+    [3.0, 2.0],
+  ])
   let r = vikor(m, [1.0, 1.0])
   assert_eq(r.ranking.order, [1, 0])
   assert_eq(r.compromise, ["B"])

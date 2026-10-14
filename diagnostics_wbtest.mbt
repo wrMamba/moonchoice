@@ -10,5 +10,8 @@ test "criterion diagnostics and leave-one-out recomputation" {
   assert_eq(sensitivity.removals[1].ranking.winners(), ["B"])
   let only = criterion_sensitivity(m, [1.0, 0.0], Additive(MinMax))
   assert_eq(only.skipped_zero_weight_remainders, ["quality"])
-  assert_true(report_json(decision_report(m, [1.0, 1.0], IdealDistance(MinMax))) is Object(_))
+  assert_true(
+    report_json(decision_report(m, [1.0, 1.0], IdealDistance(MinMax)))
+    is Object(_),
+  )
 }

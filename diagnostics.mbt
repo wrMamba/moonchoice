@@ -13,7 +13,10 @@ pub(all) struct CriterionProfile {
 
 ///|
 /// Observed ranges and scaled population deviations, not confidence estimates.
-pub fn criterion_profiles(m : DecisionMatrix, weights : Array[Double]) -> Array[CriterionProfile] raise ChoiceError {
+pub fn criterion_profiles(
+  m : DecisionMatrix,
+  weights : Array[Double],
+) -> Array[CriterionProfile] raise ChoiceError {
   let w = matrix_weights(m, weights)
   let result : Array[CriterionProfile] = []
   for j, name in m.criteria {
@@ -23,14 +26,25 @@ pub fn criterion_profiles(m : DecisionMatrix, weights : Array[Double]) -> Array[
     let scale = maximum(x.map(v => v.abs()))
     let scaled = x.map(v => if scale == 0.0 { 0.0 } else { v / scale })
     let center = sum(scaled) / x.length().to_double()
-    let variance = sum(scaled.map(v => (v - center) * (v - center))) / x.length().to_double()
+    let variance = sum(scaled.map(v => (v - center) * (v - center))) /
+      x.length().to_double()
     let distinct : Array[Double] = []
     for value in x {
-      if !distinct.contains(value) { distinct.push(value) }
+      if !distinct.contains(value) {
+        distinct.push(value)
+      }
     }
-    result.push({ name, direction: m.directions[j], minimum: lo, maximum: hi,
-      mean: checked(center * scale), population_deviation: checked(variance.sqrt() * scale),
-      distinct_values: distinct.length(), constant: lo == hi, normalized_weight: w[j] })
+    result.push({
+      name,
+      direction: m.directions[j],
+      minimum: lo,
+      maximum: hi,
+      mean: checked(center * scale),
+      population_deviation: checked(variance.sqrt() * scale),
+      distinct_values: distinct.length(),
+      constant: lo == hi,
+      normalized_weight: w[j],
+    })
   }
   result
 }
@@ -53,9 +67,15 @@ pub(all) struct CriterionSensitivity {
 
 ///|
 /// Recomputes each leave-one-criterion-out model; zero remaining weight is recorded.
-pub fn criterion_sensitivity(m : DecisionMatrix, weights : Array[Double], algorithm : Method) -> CriterionSensitivity raise ChoiceError {
+pub fn criterion_sensitivity(
+  m : DecisionMatrix,
+  weights : Array[Double],
+  algorithm : Method,
+) -> CriterionSensitivity raise ChoiceError {
   let w = matrix_weights(m, weights)
-  if m.criteria.length() < 2 { raise Invalid("criterion removal needs at least two criteria") }
+  if m.criteria.length() < 2 {
+    raise Invalid("criterion removal needs at least two criteria")
+  }
   let baseline = evaluate(m, w, algorithm)
   let removals : Array[CriterionRemoval] = []
   let skipped_zero_weight_remainders : Array[String] = []
@@ -75,11 +95,15 @@ pub fn criterion_sensitivity(m : DecisionMatrix, weights : Array[Double], algori
       other => other
     }
     let ranking = evaluate(subset, remaining_weights, reduced_algorithm)
-    removals.push({ omitted: m.criteria[omitted], remaining_criteria: subset.criteria.copy(),
-      ranking, agreement: rank_agreement(baseline, ranking),
-      winner_changed: baseline.winners() != ranking.winners() })
+    removals.push({
+      omitted: m.criteria[omitted],
+      remaining_criteria: subset.criteria.copy(),
+      ranking,
+      agreement: rank_agreement(baseline, ranking),
+      winner_changed: baseline.winners() != ranking.winners(),
+    })
   }
-  { baseline, removals, skipped_zero_weight_remainders }
+  { baseline, removals, skipped_zero_weight_remainders, }
 }
 
 ///|
@@ -94,7 +118,11 @@ pub(all) struct DecisionReport {
 
 ///|
 /// Auxiliary additive contributions are a separate diagnostic, not every method's score.
-pub fn decision_report(m : DecisionMatrix, weights : Array[Double], algorithm : Method) -> DecisionReport raise ChoiceError {
+pub fn decision_report(
+  m : DecisionMatrix,
+  weights : Array[Double],
+  algorithm : Method,
+) -> DecisionReport raise ChoiceError {
   let w = matrix_weights(m, weights)
   let profiles = criterion_profiles(m, w)
   let ranking = evaluate(m, w, algorithm)
@@ -104,22 +132,38 @@ pub fn decision_report(m : DecisionMatrix, weights : Array[Double], algorithm : 
       warnings.push("positive weight on constant criterion: " + profile.name)
     }
   }
-  if ranking.winners().length() > 1 { warnings.push("multiple alternatives share the first competition rank") }
-  warnings.push("ranking is conditional on the observed alternatives and stated preferences")
+  if ranking.winners().length() > 1 {
+    warnings.push("multiple alternatives share the first competition rank")
+  }
+  warnings.push(
+    "ranking is conditional on the observed alternatives and stated preferences",
+  )
   let additive_contributions = saw(m, w).contributions
-  { ranking, weights: w, profiles, pareto: pareto_fronts(m), additive_contributions, warnings }
+  {
+    ranking,
+    weights: w,
+    profiles,
+    pareto: pareto_fronts(m),
+    additive_contributions,
+    warnings,
+  }
 }
 
 ///|
 pub fn report_json(report : DecisionReport) -> Json raise ChoiceError {
-  let profiles = report.profiles.map(p => Json::object({
-    "name": p.name.to_json(),
-    "direction": (if p.direction == Benefit { "benefit" } else { "cost" }).to_json(),
-    "minimum": p.minimum.to_json(), "maximum": p.maximum.to_json(),
-    "mean": p.mean.to_json(), "population_deviation": p.population_deviation.to_json(),
-    "distinct_values": p.distinct_values.to_json(), "constant": p.constant.to_json(),
-    "normalized_weight": p.normalized_weight.to_json(),
-  }))
+  let profiles = report.profiles.map(p => {
+    Json::object({
+      "name": p.name.to_json(),
+      "direction": (if p.direction == Benefit { "benefit" } else { "cost" }).to_json(),
+      "minimum": p.minimum.to_json(),
+      "maximum": p.maximum.to_json(),
+      "mean": p.mean.to_json(),
+      "population_deviation": p.population_deviation.to_json(),
+      "distinct_values": p.distinct_values.to_json(),
+      "constant": p.constant.to_json(),
+      "normalized_weight": p.normalized_weight.to_json(),
+    })
+  })
   Json::object({
     "schema": "moonchoice.report/1".to_json(),
     "ranking": ranking_json(report.ranking),
@@ -133,9 +177,12 @@ pub fn report_json(report : DecisionReport) -> Json raise ChoiceError {
 
 ///|
 pub extend CriterionProfile with @debug.Debug::{to_repr}
+
 ///|
 pub extend CriterionRemoval with @debug.Debug::{to_repr}
+
 ///|
 pub extend CriterionSensitivity with @debug.Debug::{to_repr}
+
 ///|
 pub extend DecisionReport with @debug.Debug::{to_repr}

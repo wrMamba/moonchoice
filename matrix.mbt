@@ -14,7 +14,10 @@ pub struct DecisionMatrix {
 }
 
 ///|
-fn valid_labels(labels : Array[String], max_count : Int) -> Unit raise ChoiceError {
+fn valid_labels(
+  labels : Array[String],
+  max_count : Int,
+) -> Unit raise ChoiceError {
   if labels.length() == 0 || labels.length() > max_count {
     raise Budget("label count outside supported shape")
   }
@@ -72,7 +75,9 @@ pub fn DecisionMatrix::criterion_names(self : DecisionMatrix) -> Array[String] {
 }
 
 ///|
-pub fn DecisionMatrix::criterion_directions(self : DecisionMatrix) -> Array[Direction] {
+pub fn DecisionMatrix::criterion_directions(
+  self : DecisionMatrix,
+) -> Array[Direction] {
   self.directions.copy()
 }
 
@@ -87,15 +92,25 @@ pub fn DecisionMatrix::shape(self : DecisionMatrix) -> (Int, Int) {
 }
 
 ///|
-pub fn DecisionMatrix::cell(self : DecisionMatrix, row : Int, column : Int) -> Double raise ChoiceError {
-  if row < 0 || row >= self.names.length() || column < 0 || column >= self.criteria.length() {
+pub fn DecisionMatrix::cell(
+  self : DecisionMatrix,
+  row : Int,
+  column : Int,
+) -> Double raise ChoiceError {
+  if row < 0 ||
+    row >= self.names.length() ||
+    column < 0 ||
+    column >= self.criteria.length() {
     raise Invalid("matrix index out of bounds")
   }
   self.cells[row][column]
 }
 
 ///|
-pub fn DecisionMatrix::column(self : DecisionMatrix, column : Int) -> Array[Double] raise ChoiceError {
+pub fn DecisionMatrix::column(
+  self : DecisionMatrix,
+  column : Int,
+) -> Array[Double] raise ChoiceError {
   if column < 0 || column >= self.criteria.length() {
     raise Invalid("criterion index out of bounds")
   }

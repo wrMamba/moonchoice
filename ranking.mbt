@@ -10,7 +10,12 @@ pub(all) struct Ranking {
 
 ///|
 /// Stable exact sort, followed by anchor-based competition-rank tie groups.
-pub fn rank_scores(labels : Array[String], scores : Array[Double], higher_is_better~ : Bool = true, tolerance~ : Double = 1.0e-10) -> Ranking raise ChoiceError {
+pub fn rank_scores(
+  labels : Array[String],
+  scores : Array[Double],
+  higher_is_better? : Bool = true,
+  tolerance? : Double = 1.0e-10,
+) -> Ranking raise ChoiceError {
   valid_labels(labels, 256)
   valid_tolerance(tolerance)
   if scores.length() != labels.length() {
@@ -25,8 +30,14 @@ pub fn rank_scores(labels : Array[String], scores : Array[Double], higher_is_bet
     let mut j = i
     while j > 0 {
       let before = order[j - 1]
-      let better = if higher_is_better { scores[item] > scores[before] } else { scores[item] < scores[before] }
-      if !better { break }
+      let better = if higher_is_better {
+        scores[item] > scores[before]
+      } else {
+        scores[item] < scores[before]
+      }
+      if !better {
+        break
+      }
       order[j] = before
       j -= 1
     }
@@ -40,12 +51,24 @@ pub fn rank_scores(labels : Array[String], scores : Array[Double], higher_is_bet
     }
     ranks[index] = group_start + 1
   }
-  { labels: labels.copy(), scores: scores.copy(), order, ranks, higher_is_better, tie_tolerance: tolerance }
+  {
+    labels: labels.copy(),
+    scores: scores.copy(),
+    order,
+    ranks,
+    higher_is_better,
+    tie_tolerance: tolerance,
+  }
 }
 
 ///|
 fn validated_ranking(r : Ranking) -> Ranking raise ChoiceError {
-  let canonical = rank_scores(r.labels, r.scores, higher_is_better=r.higher_is_better, tolerance=r.tie_tolerance)
+  let canonical = rank_scores(
+    r.labels,
+    r.scores,
+    higher_is_better=r.higher_is_better,
+    tolerance=r.tie_tolerance,
+  )
   if canonical.order != r.order || canonical.ranks != r.ranks {
     raise Invalid("ranking order/ranks do not match scores")
   }
@@ -55,16 +78,23 @@ fn validated_ranking(r : Ranking) -> Ranking raise ChoiceError {
 ///|
 pub fn Ranking::winners(self : Ranking) -> Array[String] raise ChoiceError {
   let r = validated_ranking(self)
-  [ for index in r.order if r.ranks[index] == 1 => r.labels[index] ]
+  [
+    for index in r.order if r.ranks[index] == 1 => r.labels[index]
+  ]
 }
 
 ///|
-pub fn Ranking::top(self : Ranking, count : Int) -> Array[String] raise ChoiceError {
+pub fn Ranking::top(
+  self : Ranking,
+  count : Int,
+) -> Array[String] raise ChoiceError {
   let r = validated_ranking(self)
   if count < 0 || count > r.order.length() {
     raise Invalid("requested top count out of range")
   }
-  [ for k in 0..<count => r.labels[r.order[k]] ]
+  [
+    for k in 0..<count => r.labels[r.order[k]]
+  ]
 }
 
 ///|

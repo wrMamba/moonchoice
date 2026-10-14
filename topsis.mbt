@@ -10,7 +10,12 @@ pub(all) struct TopsisResult {
 } derive(@debug.Debug)
 
 ///|
-pub fn topsis(m : DecisionMatrix, weights : Array[Double], normalization~ : Normalization = MinMax, tolerance~ : Double = 1.0e-10) -> TopsisResult raise ChoiceError {
+pub fn topsis(
+  m : DecisionMatrix,
+  weights : Array[Double],
+  normalization? : Normalization = MinMax,
+  tolerance? : Double = 1.0e-10,
+) -> TopsisResult raise ChoiceError {
   let w = matrix_weights(m, weights)
   let x = m.normalize(normalization)
   let (n, p) = m.shape()
@@ -21,7 +26,9 @@ pub fn topsis(m : DecisionMatrix, weights : Array[Double], normalization~ : Norm
     let col = [ for i in 0..<n => x[i][j] * w[j] ]
     ideal[j] = maximum(col)
     anti_ideal[j] = minimum(col)
-    for i in 0..<n { weighted[i][j] = col[i] }
+    for i in 0..<n {
+      weighted[i][j] = col[i]
+    }
   }
   let distance_ideal = Array::make(n, 0.0)
   let distance_anti_ideal = Array::make(n, 0.0)
@@ -41,7 +48,15 @@ pub fn topsis(m : DecisionMatrix, weights : Array[Double], normalization~ : Norm
     // All alternatives identical: undefined 0/0 becomes an explicit neutral tie.
     scores[i] = if total == 0.0 { 0.5 } else { distance_anti_ideal[i] / total }
   }
-  { ranking: rank_scores(m.names, scores, tolerance~), normalized: x, weighted, ideal, anti_ideal, distance_ideal, distance_anti_ideal }
+  {
+    ranking: rank_scores(m.names, scores, tolerance~),
+    normalized: x,
+    weighted,
+    ideal,
+    anti_ideal,
+    distance_ideal,
+    distance_anti_ideal,
+  }
 }
 
 ///|

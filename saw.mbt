@@ -7,7 +7,12 @@ pub(all) struct AdditiveResult {
 } derive(@debug.Debug)
 
 ///|
-pub fn saw(m : DecisionMatrix, weights : Array[Double], normalization~ : Normalization = MinMax, tolerance~ : Double = 1.0e-10) -> AdditiveResult raise ChoiceError {
+pub fn saw(
+  m : DecisionMatrix,
+  weights : Array[Double],
+  normalization? : Normalization = MinMax,
+  tolerance? : Double = 1.0e-10,
+) -> AdditiveResult raise ChoiceError {
   let w = matrix_weights(m, weights)
   let x = m.normalize(normalization)
   let (n, p) = m.shape()
@@ -19,7 +24,12 @@ pub fn saw(m : DecisionMatrix, weights : Array[Double], normalization~ : Normali
     }
     scores[i] = checked(sum(contributions[i]))
   }
-  { ranking: rank_scores(m.names, scores, tolerance~), normalized: x, contributions, weights: w }
+  {
+    ranking: rank_scores(m.names, scores, tolerance~),
+    normalized: x,
+    contributions,
+    weights: w,
+  }
 }
 
 ///|

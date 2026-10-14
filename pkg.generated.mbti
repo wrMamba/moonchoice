@@ -1,0 +1,329 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "wrMamba/moonchoice"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn additive_break_even(DecisionMatrix, Array[Double], Int, Int, Int) -> AdditiveBreakEven raise ChoiceError
+
+pub fn ahp(Array[Array[Double]], tolerance? : Double, max_iterations? : Int) -> AhpResult raise ChoiceError
+
+pub fn compare_methods(DecisionMatrix, Array[Double], Array[Method], tolerance? : Double) -> MethodComparison raise ChoiceError
+
+pub fn criterion_profiles(DecisionMatrix, Array[Double]) -> Array[CriterionProfile] raise ChoiceError
+
+pub fn criterion_sensitivity(DecisionMatrix, Array[Double], Method) -> CriterionSensitivity raise ChoiceError
+
+pub fn critic_weights(DecisionMatrix) -> WeightEstimate raise ChoiceError
+
+pub fn decision_matrix(Array[String], Array[String], Array[Direction], Array[Array[Double]]) -> DecisionMatrix raise ChoiceError
+
+pub fn decision_report(DecisionMatrix, Array[Double], Method) -> DecisionReport raise ChoiceError
+
+pub fn decode_csv(String) -> DecisionMatrix raise ChoiceError
+
+pub fn decode_matrix(String) -> DecisionMatrix raise ChoiceError
+
+pub fn deviation_weights(DecisionMatrix) -> WeightEstimate raise ChoiceError
+
+pub fn dispatch(String) -> String
+
+pub fn encode_csv(DecisionMatrix) -> String
+
+pub fn encode_matrix(DecisionMatrix) -> String
+
+pub fn entropy_weights(DecisionMatrix) -> WeightEstimate raise ChoiceError
+
+pub fn evaluate(DecisionMatrix, Array[Double], Method, tolerance? : Double) -> Ranking raise ChoiceError
+
+pub fn explain_pair(DecisionMatrix, Array[Double], Array[Preference], Int, Int) -> PairExplanation raise ChoiceError
+
+pub fn normalize_weights(Array[Double]) -> Array[Double] raise ChoiceError
+
+pub fn pareto_fronts(DecisionMatrix) -> ParetoResult
+
+pub fn parse_document(String) -> Json raise ChoiceError
+
+pub fn preference_degree(Preference, Double) -> Double raise ChoiceError
+
+pub fn promethee(DecisionMatrix, Array[Double], Array[Preference], tolerance? : Double) -> PrometheeResult raise ChoiceError
+
+pub fn rank_agreement(Ranking, Ranking) -> RankAgreement raise ChoiceError
+
+pub fn rank_scores(Array[String], Array[Double], higher_is_better? : Bool, tolerance? : Double) -> Ranking raise ChoiceError
+
+pub fn ranking_json(Ranking) -> Json raise ChoiceError
+
+pub fn removal_analysis(DecisionMatrix, Array[Double], Method, Int) -> RemovalAnalysis raise ChoiceError
+
+pub fn report_json(DecisionReport) -> Json raise ChoiceError
+
+pub fn saw(DecisionMatrix, Array[Double], normalization? : Normalization, tolerance? : Double) -> AdditiveResult raise ChoiceError
+
+pub fn topsis(DecisionMatrix, Array[Double], normalization? : Normalization, tolerance? : Double) -> TopsisResult raise ChoiceError
+
+pub fn vikor(DecisionMatrix, Array[Double], v? : Double, tolerance? : Double) -> VikorResult raise ChoiceError
+
+pub fn weight_grid(Array[Double], Int, Array[Double]) -> Array[Array[Double]] raise ChoiceError
+
+pub fn weight_scenarios(DecisionMatrix, Array[Array[Double]], Method, tolerance? : Double) -> ScenarioReport raise ChoiceError
+
+pub fn weighted_product(DecisionMatrix, Array[Double], tolerance? : Double) -> ProductResult raise ChoiceError
+
+// Errors
+pub suberror ChoiceError {
+  Invalid(String)
+  Budget(String)
+  Numerical(String)
+} derive(@debug.Debug)
+pub fn ChoiceError::to_repr(Self) -> @debug.Repr
+
+// Types and methods
+pub(all) struct AdditiveBreakEven {
+  intercept : Double
+  slope : Double
+  crossing : Double?
+  tied_for_all_weights : Bool
+} derive(@debug.Debug)
+pub fn AdditiveBreakEven::to_repr(Self) -> @debug.Repr
+
+pub(all) struct AdditiveResult {
+  ranking : Ranking
+  normalized : Array[Array[Double]]
+  contributions : Array[Array[Double]]
+  weights : Array[Double]
+} derive(@debug.Debug)
+pub fn AdditiveResult::to_repr(Self) -> @debug.Repr
+
+pub(all) struct AhpResult {
+  weights : Array[Double]
+  lambda_max : Double
+  consistency_index : Double
+  consistency_ratio : Double
+  residual : Double
+  iterations : Int
+  worst_triad : Array[Int]
+  worst_log_inconsistency : Double
+} derive(@debug.Debug)
+pub fn AhpResult::to_repr(Self) -> @debug.Repr
+
+pub(all) struct CriterionComparison {
+  criterion : String
+  left_value : Double
+  right_value : Double
+  oriented_difference : Double
+  weighted_preference_left : Double
+  weighted_preference_right : Double
+} derive(@debug.Debug)
+pub fn CriterionComparison::to_repr(Self) -> @debug.Repr
+
+pub(all) struct CriterionProfile {
+  name : String
+  direction : Direction
+  minimum : Double
+  maximum : Double
+  mean : Double
+  population_deviation : Double
+  distinct_values : Int
+  constant : Bool
+  normalized_weight : Double
+} derive(@debug.Debug)
+pub fn CriterionProfile::to_repr(Self) -> @debug.Repr
+
+pub(all) struct CriterionRemoval {
+  omitted : String
+  remaining_criteria : Array[String]
+  ranking : Ranking
+  agreement : RankAgreement
+  winner_changed : Bool
+} derive(@debug.Debug)
+pub fn CriterionRemoval::to_repr(Self) -> @debug.Repr
+
+pub(all) struct CriterionSensitivity {
+  baseline : Ranking
+  removals : Array[CriterionRemoval]
+  skipped_zero_weight_remainders : Array[String]
+} derive(@debug.Debug)
+pub fn CriterionSensitivity::to_repr(Self) -> @debug.Repr
+
+pub struct DecisionMatrix {
+  names : Array[String]
+  criteria : Array[String]
+  directions : Array[Direction]
+  cells : Array[Array[Double]]
+}
+pub fn DecisionMatrix::alternatives(Self) -> Array[String]
+pub fn DecisionMatrix::cell(Self, Int, Int) -> Double raise ChoiceError
+pub fn DecisionMatrix::column(Self, Int) -> Array[Double] raise ChoiceError
+pub fn DecisionMatrix::convert_units(Self, Array[Double], Array[Double]) -> Self raise ChoiceError
+pub fn DecisionMatrix::criterion_directions(Self) -> Array[Direction]
+pub fn DecisionMatrix::criterion_names(Self) -> Array[String]
+pub fn DecisionMatrix::normalize(Self, Normalization) -> Array[Array[Double]] raise ChoiceError
+pub fn DecisionMatrix::select_alternatives(Self, Array[Int]) -> Self raise ChoiceError
+pub fn DecisionMatrix::select_criteria(Self, Array[Int]) -> Self raise ChoiceError
+pub fn DecisionMatrix::shape(Self) -> (Int, Int)
+pub fn DecisionMatrix::to_json(Self) -> Json
+pub fn DecisionMatrix::values(Self) -> Array[Array[Double]]
+
+pub(all) struct DecisionReport {
+  ranking : Ranking
+  weights : Array[Double]
+  profiles : Array[CriterionProfile]
+  pareto : ParetoResult
+  additive_contributions : Array[Array[Double]]
+  warnings : Array[String]
+} derive(@debug.Debug)
+pub fn DecisionReport::to_repr(Self) -> @debug.Repr
+
+pub(all) enum Direction {
+  Benefit
+  Cost
+} derive(Eq, @debug.Debug)
+pub fn Direction::equal(Self, Self) -> Bool
+pub fn Direction::not_equal(Self, Self) -> Bool
+pub fn Direction::to_repr(Self) -> @debug.Repr
+
+pub(all) enum Method {
+  Additive(Normalization)
+  IdealDistance(Normalization)
+  Product
+  Compromise(Double)
+  Outranking(Array[Preference])
+} derive(@debug.Debug)
+pub fn Method::to_repr(Self) -> @debug.Repr
+
+pub(all) struct MethodComparison {
+  rankings : Array[Ranking]
+  agreements : Array[Array[RankAgreement]]
+} derive(@debug.Debug)
+pub fn MethodComparison::to_repr(Self) -> @debug.Repr
+
+pub(all) enum Normalization {
+  MinMax
+  Vector
+} derive(Eq, @debug.Debug)
+pub fn Normalization::equal(Self, Self) -> Bool
+pub fn Normalization::not_equal(Self, Self) -> Bool
+pub fn Normalization::to_repr(Self) -> @debug.Repr
+
+pub(all) struct PairExplanation {
+  left : String
+  right : String
+  criteria : Array[CriterionComparison]
+  aggregate_left : Double
+  aggregate_right : Double
+  net_preference : Double
+  left_dominates : Bool
+  right_dominates : Bool
+} derive(@debug.Debug)
+pub fn PairExplanation::to_repr(Self) -> @debug.Repr
+
+pub(all) struct ParetoResult {
+  fronts : Array[Array[String]]
+  front_indices : Array[Int]
+  dominated_by : Array[Array[Int]]
+} derive(@debug.Debug)
+pub fn ParetoResult::to_repr(Self) -> @debug.Repr
+
+pub(all) enum Preference {
+  Usual
+  UShape(Double)
+  VShape(Double)
+  Level(Double, Double)
+  Linear(Double, Double)
+  Gaussian(Double)
+} derive(@debug.Debug)
+pub fn Preference::to_repr(Self) -> @debug.Repr
+
+pub(all) struct ProductResult {
+  ranking : Ranking
+  log_contributions : Array[Array[Double]]
+  relative_products : Array[Double]
+} derive(@debug.Debug)
+pub fn ProductResult::to_repr(Self) -> @debug.Repr
+
+pub(all) struct PrometheeResult {
+  ranking : Ranking
+  preference_matrix : Array[Array[Double]]
+  positive_flow : Array[Double]
+  negative_flow : Array[Double]
+} derive(@debug.Debug)
+pub fn PrometheeResult::to_repr(Self) -> @debug.Repr
+
+pub(all) struct RankAgreement {
+  spearman : Double?
+  kendall_tau_b : Double?
+  concordant_pairs : Int
+  discordant_pairs : Int
+  shared_winners : Array[String]
+} derive(@debug.Debug)
+pub fn RankAgreement::to_repr(Self) -> @debug.Repr
+
+pub(all) struct Ranking {
+  labels : Array[String]
+  scores : Array[Double]
+  order : Array[Int]
+  ranks : Array[Int]
+  higher_is_better : Bool
+  tie_tolerance : Double
+} derive(@debug.Debug)
+pub fn Ranking::to_repr(Self) -> @debug.Repr
+pub fn Ranking::top(Self, Int) -> Array[String] raise ChoiceError
+pub fn Ranking::winners(Self) -> Array[String] raise ChoiceError
+
+pub(all) struct RemovalAnalysis {
+  removed : String
+  baseline : Ranking
+  remaining : Ranking
+  agreement : RankAgreement
+  winner_changed : Bool
+} derive(@debug.Debug)
+pub fn RemovalAnalysis::to_repr(Self) -> @debug.Repr
+
+pub(all) struct ScenarioReport {
+  rankings : Array[Ranking]
+  rank_counts : Array[Array[Int]]
+  winner_counts : Array[Int]
+  mean_ranks : Array[Double]
+  best_ranks : Array[Int]
+  worst_ranks : Array[Int]
+  universally_best : Array[String]
+  pairwise_wins : Array[Array[Int]]
+  pairwise_ties : Array[Array[Int]]
+} derive(@debug.Debug)
+pub fn ScenarioReport::to_repr(Self) -> @debug.Repr
+
+pub(all) struct TopsisResult {
+  ranking : Ranking
+  normalized : Array[Array[Double]]
+  weighted : Array[Array[Double]]
+  ideal : Array[Double]
+  anti_ideal : Array[Double]
+  distance_ideal : Array[Double]
+  distance_anti_ideal : Array[Double]
+} derive(@debug.Debug)
+pub fn TopsisResult::to_repr(Self) -> @debug.Repr
+
+pub(all) struct VikorResult {
+  ranking : Ranking
+  utility : Array[Double]
+  regret : Array[Double]
+  criterion_regrets : Array[Array[Double]]
+  compromise : Array[String]
+  acceptable_advantage : Bool
+  acceptable_stability : Bool
+} derive(@debug.Debug)
+pub fn VikorResult::to_repr(Self) -> @debug.Repr
+
+pub(all) struct WeightEstimate {
+  weights : Array[Double]
+  information : Array[Double]
+  uniform_fallback : Bool
+} derive(@debug.Debug)
+pub fn WeightEstimate::to_repr(Self) -> @debug.Repr
+
+// Type aliases
+
+// Traits

@@ -9,14 +9,21 @@ pub(all) struct RankAgreement {
 
 ///|
 fn aligned_indices(a : Ranking, b : Ranking) -> Array[Int] raise ChoiceError {
-  if a.labels.length() != b.labels.length() { raise Invalid("ranking label sets differ") }
+  if a.labels.length() != b.labels.length() {
+    raise Invalid("ranking label sets differ")
+  }
   let indices : Array[Int] = []
   for label in a.labels {
     let mut found = -1
     for j, candidate in b.labels {
-      if label == candidate { found = j; break }
+      if label == candidate {
+        found = j
+        break
+      }
     }
-    if found < 0 { raise Invalid("ranking label sets differ") }
+    if found < 0 {
+      raise Invalid("ranking label sets differ")
+    }
     indices.push(found)
   }
   indices
@@ -31,7 +38,10 @@ fn midranks(r : Ranking) -> Array[Double] {
 }
 
 ///|
-pub fn rank_agreement(left : Ranking, right : Ranking) -> RankAgreement raise ChoiceError {
+pub fn rank_agreement(
+  left : Ranking,
+  right : Ranking,
+) -> RankAgreement raise ChoiceError {
   let a = validated_ranking(left)
   let b = validated_ranking(right)
   let indices = aligned_indices(a, b)
@@ -55,19 +65,43 @@ pub fn rank_agreement(left : Ranking, right : Ranking) -> RankAgreement raise Ch
     for j in (i + 1)..<n {
       let dx = x[i] - x[j]
       let dy = y[i] - y[j]
-      if dx == 0.0 && dy == 0.0 { continue }
-      if dx == 0.0 { tied_left += 1 }
-      else if dy == 0.0 { tied_right += 1 }
-      else if dx * dy > 0.0 { concordant_pairs += 1 }
-      else { discordant_pairs += 1 }
+      if dx == 0.0 && dy == 0.0 {
+        continue
+      }
+      if dx == 0.0 {
+        tied_left += 1
+      } else if dy == 0.0 {
+        tied_right += 1
+      } else if dx * dy > 0.0 {
+        concordant_pairs += 1
+      } else {
+        discordant_pairs += 1
+      }
     }
   }
-  let spearman = if xx == 0.0 || yy == 0.0 { None } else { Some(xy / (xx * yy).sqrt()) }
+  let spearman = if xx == 0.0 || yy == 0.0 {
+    None
+  } else {
+    Some(xy / (xx * yy).sqrt())
+  }
   let comparable = concordant_pairs + discordant_pairs
-  let denominator = ((comparable + tied_left).to_double() * (comparable + tied_right).to_double()).sqrt()
-  let kendall_tau_b = if denominator == 0.0 { None } else { Some((concordant_pairs - discordant_pairs).to_double() / denominator) }
-  let shared_winners = [ for i in 0..<n if a.ranks[i] == 1 && b.ranks[indices[i]] == 1 => a.labels[i] ]
-  { spearman, kendall_tau_b, concordant_pairs, discordant_pairs, shared_winners }
+  let denominator = ((comparable + tied_left).to_double() *
+  (comparable + tied_right).to_double()).sqrt()
+  let kendall_tau_b = if denominator == 0.0 {
+    None
+  } else {
+    Some((concordant_pairs - discordant_pairs).to_double() / denominator)
+  }
+  let shared_winners = [
+    for i in 0..<n if a.ranks[i] == 1 && b.ranks[indices[i]] == 1 => a.labels[i]
+  ]
+  {
+    spearman,
+    kendall_tau_b,
+    concordant_pairs,
+    discordant_pairs,
+    shared_winners,
+  }
 }
 
 ///|
