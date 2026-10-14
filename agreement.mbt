@@ -5,7 +5,7 @@ pub(all) struct RankAgreement {
   concordant_pairs : Int
   discordant_pairs : Int
   shared_winners : Array[String]
-} derive(Debug)
+} derive(@debug.Debug)
 
 ///|
 fn aligned_indices(a : Ranking, b : Ranking) -> Array[Int] raise ChoiceError {
@@ -69,3 +69,6 @@ pub fn rank_agreement(left : Ranking, right : Ranking) -> RankAgreement raise Ch
   let shared_winners = [ for i in 0..<n if a.ranks[i] == 1 && b.ranks[indices[i]] == 1 => a.labels[i] ]
   { spearman, kendall_tau_b, concordant_pairs, discordant_pairs, shared_winners }
 }
+
+///|
+pub extend RankAgreement with @debug.Debug::{to_repr}

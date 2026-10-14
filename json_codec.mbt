@@ -1,0 +1,106 @@
+///|
+/// Bounded parse: at most 1 Mi code units, with at most eight nested containers.
+pub fn parse_document(text : String) -> Json raise ChoiceError {
+  if text.length() > 1048576 { raise Budget("JSON document exceeds 1 Mi code units") }
+  try @json.parse(text[:], max_nesting_depth=8) catch {
+    _ => raise Invalid("invalid JSON or excessive nesting")
+  }
+}
+
+///|
+fn object_fields(value : Json, allowed : Array[String]) -> Map[String, Json] raise ChoiceError {
+  guard value is Object(fields) else { raise Invalid("expected a JSON object") }
+  for key, _ in fields {
+    if !allowed.contains(key) { raise Invalid("unknown JSON field: " + key) }
+  }
+  fields
+}
+
+///|
+fn required(fields : Map[String, Json], key : String) -> Json raise ChoiceError {
+  match fields.get(key) {
+    Some(value) => value
+    None => raise Invalid("missing JSON field: " + key)
+  }
+}
+
+///|
+fn json_string(value : Json) -> String raise ChoiceError {
+  guard value is String(s) else { raise Invalid("expected JSON string") }
+  s
+}
+
+///|
+fn json_number(value : Json) -> Double raise ChoiceError {
+  guard value is Number(x, ..) else { raise Invalid("expected JSON number") }
+  input_number(x)
+  x
+}
+
+///|
+fn json_array(value : Json, limit : Int) -> Array[Json] raise ChoiceError {
+  guard value is Array(items) else { raise Invalid("expected JSON array") }
+  if items.length() > limit { raise Budget("JSON array exceeds supported length") }
+  items
+}
+
+///|
+fn json_numbers(value : Json, limit : Int) -> Array[Double] raise ChoiceError {
+  json_array(value, limit).map(json_number)
+}
+
+///|
+fn matrix_from_json(value : Json) -> DecisionMatrix raise ChoiceError {
+  let f = object_fields(value, ["schema", "alternatives", "criteria", "directions", "values"])
+  if json_string(required(f, "schema")) != "moonchoice.matrix/1" {
+    raise Invalid("unsupported matrix schema")
+  }
+  let names = json_array(required(f, "alternatives"), 256).map(json_string)
+  let criteria = json_array(required(f, "criteria"), 32).map(json_string)
+  let directions = json_array(required(f, "directions"), 32).map(v => {
+    match json_string(v) {
+      "benefit" => Benefit
+      "cost" => Cost
+      _ => raise Invalid("direction must be benefit or cost")
+    }
+  })
+  let values = json_array(required(f, "values"), 256).map(row => json_numbers(row, 32))
+  decision_matrix(names, criteria, directions, values)
+}
+
+///|
+pub fn decode_matrix(text : String) -> DecisionMatrix raise ChoiceError {
+  matrix_from_json(parse_document(text))
+}
+
+///|
+pub fn DecisionMatrix::to_json(self : DecisionMatrix) -> Json {
+  Json::Object({
+    "schema": Json::String("moonchoice.matrix/1"),
+    "alternatives": self.names.to_json(),
+    "criteria": self.criteria.to_json(),
+    "directions": self.directions.map(d => if d == Benefit { "benefit" } else { "cost" }).to_json(),
+    "values": self.cells.to_json(),
+  })
+}
+
+///|
+pub fn encode_matrix(m : DecisionMatrix) -> String {
+  m.to_json().stringify()
+}
+
+///|
+/// Validates externally mutable Ranking arrays before serializing them.
+pub fn ranking_json(ranking : Ranking) -> Json raise ChoiceError {
+  let r = validated_ranking(ranking)
+  Json::Object({
+    "schema": Json::String("moonchoice.ranking/1"),
+    "labels": r.labels.to_json(),
+    "scores": r.scores.to_json(),
+    "order": r.order.to_json(),
+    "ranks": r.ranks.to_json(),
+    "higher_is_better": r.higher_is_better.to_json(),
+    "tie_tolerance": r.tie_tolerance.to_json(),
+    "winners": r.winners().to_json(),
+  })
+}

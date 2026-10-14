@@ -8,7 +8,7 @@ pub(all) struct AhpResult {
   iterations : Int
   worst_triad : Array[Int]
   worst_log_inconsistency : Double
-} derive(Debug)
+} derive(@debug.Debug)
 
 ///|
 /// Reciprocal positive matrices of size 1..15; bounded power iteration.
@@ -68,3 +68,6 @@ pub fn ahp(comparisons : Array[Array[Double]], tolerance~ : Double = 1.0e-10, ma
   }
   { weights, lambda_max, consistency_index, consistency_ratio, residual, iterations, worst_triad, worst_log_inconsistency }
 }
+
+///|
+pub extend AhpResult with @debug.Debug::{to_repr}

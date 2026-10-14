@@ -45,19 +45,22 @@ pub(all) struct RemovalAnalysis {
   remaining : Ranking
   agreement : RankAgreement
   winner_changed : Bool
-} derive(Debug)
+} derive(@debug.Debug)
 
 ///|
 /// Reports actual rank reversal when removing an alternative changes normalization.
-pub fn removal_analysis(m : DecisionMatrix, weights : Array[Double], method : Method, removed : Int) -> RemovalAnalysis raise ChoiceError {
+pub fn removal_analysis(m : DecisionMatrix, weights : Array[Double], algorithm : Method, removed : Int) -> RemovalAnalysis raise ChoiceError {
   let n = m.names.length()
   if n < 2 || removed < 0 || removed >= n { raise Invalid("removal requires at least two alternatives and a valid index") }
-  let baseline = evaluate(m, weights, method)
+  let baseline = evaluate(m, weights, algorithm)
   let indices = [ for i in 0..<n if i != removed => i ]
   let subset = m.select_alternatives(indices)
-  let remaining = evaluate(subset, weights, method)
+  let remaining = evaluate(subset, weights, algorithm)
   let projected = rank_scores(subset.names, indices.map(i => baseline.scores[i]), higher_is_better=baseline.higher_is_better, tolerance=baseline.tie_tolerance)
   let agreement = rank_agreement(projected, remaining)
   let winner_changed = projected.winners() != remaining.winners()
   { removed: m.names[removed], baseline, remaining, agreement, winner_changed }
 }
+
+///|
+pub extend RemovalAnalysis with @debug.Debug::{to_repr}

@@ -3,7 +3,7 @@ pub(all) struct WeightEstimate {
   weights : Array[Double]
   information : Array[Double]
   uniform_fallback : Bool
-} derive(Debug)
+} derive(@debug.Debug)
 
 ///|
 fn weight_estimate(information : Array[Double]) -> WeightEstimate raise ChoiceError {
@@ -88,3 +88,6 @@ pub fn critic_weights(m : DecisionMatrix) -> WeightEstimate raise ChoiceError {
   // contrast information under CRITIC. The explicit fallback is uniform.
   weight_estimate(information)
 }
+
+///|
+pub extend WeightEstimate with @debug.Debug::{to_repr}

@@ -6,7 +6,7 @@ pub(all) struct CriterionComparison {
   oriented_difference : Double
   weighted_preference_left : Double
   weighted_preference_right : Double
-} derive(Debug)
+} derive(@debug.Debug)
 
 ///|
 pub(all) struct PairExplanation {
@@ -18,7 +18,7 @@ pub(all) struct PairExplanation {
   net_preference : Double
   left_dominates : Bool
   right_dominates : Bool
-} derive(Debug)
+} derive(@debug.Debug)
 
 ///|
 pub fn explain_pair(m : DecisionMatrix, weights : Array[Double], preferences : Array[Preference], left : Int, right : Int) -> PairExplanation raise ChoiceError {
@@ -43,7 +43,7 @@ pub(all) struct AdditiveBreakEven {
   slope : Double
   crossing : Double?
   tied_for_all_weights : Bool
-} derive(Debug)
+} derive(@debug.Debug)
 
 ///|
 /// Exact SAW one-coordinate weight-grid crossing for a fixed normalization matrix.
@@ -67,3 +67,12 @@ pub fn additive_break_even(m : DecisionMatrix, weights : Array[Double], criterio
   }
   { intercept, slope, crossing: root, tied_for_all_weights: intercept == 0.0 && slope == 0.0 }
 }
+
+///|
+pub extend CriterionComparison with @debug.Debug::{to_repr}
+
+///|
+pub extend PairExplanation with @debug.Debug::{to_repr}
+
+///|
+pub extend AdditiveBreakEven with @debug.Debug::{to_repr}

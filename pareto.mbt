@@ -3,7 +3,7 @@ pub(all) struct ParetoResult {
   fronts : Array[Array[String]]
   front_indices : Array[Int]
   dominated_by : Array[Array[Int]]
-} derive(Debug)
+} derive(@debug.Debug)
 
 ///|
 fn dominates(m : DecisionMatrix, a : Int, b : Int) -> Bool {
@@ -51,3 +51,6 @@ pub fn pareto_fronts(m : DecisionMatrix) -> ParetoResult {
   }
   { fronts, front_indices, dominated_by }
 }
+
+///|
+pub extend ParetoResult with @debug.Debug::{to_repr}

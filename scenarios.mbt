@@ -9,16 +9,16 @@ pub(all) struct ScenarioReport {
   universally_best : Array[String]
   pairwise_wins : Array[Array[Int]]
   pairwise_ties : Array[Array[Int]]
-} derive(Debug)
+} derive(@debug.Debug)
 
 ///|
 /// Frequencies describe only the supplied finite scenario grid, not probabilities.
-pub fn weight_scenarios(m : DecisionMatrix, scenarios : Array[Array[Double]], method : Method, tolerance~ : Double = 1.0e-10) -> ScenarioReport raise ChoiceError {
+pub fn weight_scenarios(m : DecisionMatrix, scenarios : Array[Array[Double]], algorithm : Method, tolerance~ : Double = 1.0e-10) -> ScenarioReport raise ChoiceError {
   let (n, p) = m.shape()
   let count = scenarios.length()
   if count == 0 || count > 64 { raise Budget("scenario count must be 1..64") }
   if n * n * p * count > 16777216 { raise Budget("scenario work exceeds 16777216 cell comparisons") }
-  let rankings = scenarios.map(w => evaluate(m, w, method, tolerance~))
+  let rankings = scenarios.map(w => evaluate(m, w, algorithm, tolerance~))
   let rank_counts : Array[Array[Int]] = [ for _ in 0..<n => Array::make(n, 0) ]
   let winner_counts = Array::make(n, 0)
   let mean_ranks = Array::make(n, 0.0)
@@ -66,3 +66,6 @@ pub fn weight_grid(weights : Array[Double], criterion : Int, values : Array[Doub
   }
   result
 }
+
+///|
+pub extend ScenarioReport with @debug.Debug::{to_repr}
